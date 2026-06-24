@@ -1,161 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Hang out with me?</title>
-  <style>
-    body { margin:0; height:100vh; display:flex; justify-content:center; align-items:center; background:pink; font-family:Arial, sans-serif; overflow:hidden; }
-    .card { text-align:center; background:white; padding:30px 40px; border-radius:20px; box-shadow:0 10px 25px rgba(0,0,0,0.2); min-width:320px; max-width:500px; }
-    button { padding:10px 20px; margin:8px; font-size:16px; border:none; border-radius:10px; cursor:pointer; }
-    .primary { background:#ff4d6d; color:white; }
-    .secondary { background:#999; color:white; position:absolute; }
-    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-    .day { background:#ffe3ea; border-radius:10px; padding:10px; cursor:pointer; }
-    textarea { width:100%; height:120px; border-radius:10px; border:1px solid #ccc; padding:10px; }
-    .meme { width:150px; margin-top:15px; }
-  </style>
+<meta charset="UTF-8">
+<title>You!Me!Summer Date?!</title>
+
+<style>
+  body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Georgia, sans-serif;
+    overflow:hidden;
+
+    background: linear-gradient(135deg, #ffd6e7, #ffeef5, #ffc1d6);
+  }
+
+  .card{
+    text-align:center;
+    background:white;
+    padding:30px 40px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    min-width:320px;
+    max-width:500px;
+  }
+
+  button{
+    padding:10px 20px;
+    margin:8px;
+    font-size:16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  .primary{ background:#ff4d6d; color:white; }
+
+  .secondary{
+    background:#999;
+    color:white;
+    position:absolute;
+    transition:0.08s linear;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+
+  .day{
+    background:#ffe3ea;
+    border-radius:10px;
+    padding:10px;
+    cursor:pointer;
+  }
+
+  textarea{
+    width:100%;
+    height:120px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    padding:10px;
+  }
+
+  .meme{
+    width:150px;
+    margin-top:15px;
+  }
+
+  /* CHAT */
+  .chat-box{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin:15px 0;
+    text-align:left;
+  }
+
+  .bubble{
+    max-width:85%;
+    padding:10px 14px;
+    border-radius:16px;
+    line-height:1.4;
+    font-size:14px;
+  }
+
+  .bot{
+    background:#ffe3ea;
+    align-self:flex-start;
+  }
+</style>
 </head>
+
 <body>
+
 <div id="app" class="card"></div>
+
 <script>
-  const app = document.getElementById('app');
-  let selectedDate=null, selectedTime=null, idea='', flower='';
+const app = document.getElementById('app');
 
-  const ENDPOINT = "https://formspree.io/f/xreonyej";
+let selectedDate=null;
+let selectedTime=null;
+let idea='';
+let flower='';
+let extra='';
 
-  const memes = [
-    'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-    'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif',
-    'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
-    'https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif',
-    'https://media.giphy.com/media/13borq7Zo2kulO/giphy.gif',
-    'https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif'
-  ];
+const memes = [
+  'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif',
+  'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
+  'https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif',
+  'https://media.giphy.com/media/13borq7Zo2kulO/giphy.gif',
+  'https://media.giphy.com/media/ASd0Ukj0y3qMM/giphy.gif',
+  'https://media.giphy.com/media/l0HlNaQ6gWfllcjDO/giphy.gif'
+];
 
-  const meme = (i)=>`<img class="meme" src="${memes[i]}"/>`;
+const meme = (i)=>`<img class="meme" src="${memes[i]}"/>`;
 
-  function page1(){
-    app.innerHTML = `
-      <h1>Hang out with me, pleaseeeeeee???? 🥺💖</h1>
-      <button class="primary" onclick="page2()">Yes 💕</button>
-      <button id="noBtn" class="secondary" onmouseover="moveNo()">No 😢</button>
-      ${meme(0)}
-    `;
-  }
+const ENDPOINT = "https://formspree.io/f/xreonyej";
 
-  function moveNo(){
-    const btn=document.getElementById('noBtn');
-    btn.style.left=Math.random()*(window.innerWidth-100)+'px';
-    btn.style.top=Math.random()*(window.innerHeight-50)+'px';
-  }
+/* ================= NO BUTTON GAME ================= */
 
-  function page2(){
-    let daysHTML='';
-    for(let d=18; d<=25; d++){
-      daysHTML += `<div class="day" onclick="selectDate(${d})">April ${d}</div>`;
-    }
-    app.innerHTML = `
-      <h1>Pick a date 📅</h1>
-      <div class="grid">${daysHTML}</div>
-      ${meme(1)}
-    `;
-  }
-
-  function selectDate(d){ selectedDate=d; page3(); }
-
-  function page3(){
-    app.innerHTML = `
-      <h1>April ${selectedDate} 💖</h1>
-      <h2>Lunch or Dinner? 🍽️</h2>
-      <button class="primary" onclick="selectTime('Lunch')">Lunch</button>
-      <button class="primary" onclick="selectTime('Dinner')">Dinner</button>
-      ${meme(2)}
-    `;
-  }
-
-  function selectTime(t){ selectedTime=t; page4(); }
-
-  function page4(){
-    app.innerHTML = `
-      <h2>Do you have any idea for the location or what would you like to try on the date? 💭</h2>
-      <textarea id="ideaInput"></textarea>
-      <br>
-      <button class="primary" onclick="finishIdea()">Submit</button>
-      <button onclick="noIdea()">Nope! 🙈</button>
-      ${meme(3)}
-    `;
-  }
-
-  function finishIdea(){ idea=document.getElementById('ideaInput').value; page5(); }
-
-  function noIdea(){
-    idea='';
-    app.innerHTML = `
-      <h1>Then I'll decide everything 😏</h1>
-      <button class="primary" onclick="page5()">Continue</button>
-      ${meme(3)}
-    `;
-  }
-
-  function page5(){
+function page1(){
   app.innerHTML = `
-    <h2>Would you like some flower on that day? 🌸</h2>
+    <h1>You!Me!Summer Date go go ˖°𓇼🌊⋆🐚🫧</h1>
+    <button class="primary" onclick="page2()">Yes 💖</button>
+
+    <button id="noBtn"
+      class="secondary"
+      onmouseover="startDodge()"
+      onclick="startDodge()">
+      No 😢
+    </button>
+
+    ${meme(0)}
+  `;
+}
+
+function startDodge(){
+  const btn = document.getElementById('noBtn');
+
+  document.onmousemove = (e) => {
+    const rect = btn.getBoundingClientRect();
+
+    const dx = e.clientX - rect.left;
+    const dy = e.clientY - rect.top;
+
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if(dist < 120){
+      const x = Math.random() * (window.innerWidth - 120);
+      const y = Math.random() * (window.innerHeight - 60);
+
+      btn.style.left = x + 'px';
+      btn.style.top = y + 'px';
+    }
+  };
+}
+
+/* ================= FLOW ================= */
+
+function page2(){
+  app.innerHTML = `
+    <h1>Pick a date 📅</h1>
+    <div class="grid">
+      <div class="day" onclick="selectDate('July 3rd')">July 3rd</div>
+      <div class="day" onclick="selectDate('July 4th')">July 4th</div>
+      <div class="day" onclick="selectDate('July 5th')">July 5th</div>
+    </div>
+    ${meme(1)}
+  `;
+}
+
+function selectDate(d){
+  selectedDate = d;
+  page3();
+}
+
+function page3(){
+  app.innerHTML = `
+    <h1>${selectedDate} 💖</h1>
+    <h2>What time of the day? 🍽️</h2>
+
+    <button class="primary" onclick="selectTime('Day'time)">Day</button>
+    <button class="primary" onclick="selectTime('In the afternoon')">Afternoon</button>
+    <button class="primary" onclick="selectTime('Evening')">Evening</button>
+    <button class="primary" onclick="selectTime('All day')">All day</button>
+
+    ${meme(1)}
+  `;
+}
+
+function selectTime(t){
+  selectedTime = t;
+  page4();
+}
+
+function page4(){
+  app.innerHTML = `
+    <h2>What your idea of a "date" (place to go, what to do,...) 💭</h2>
+    <textarea id="ideaInput"></textarea>
+
+    <br>
+    <button class="primary" onclick="finishIdea()">Submit</button>
+    <button onclick="noIdea()">No idea 🙈</button>
+
+    ${meme(2)}
+  `;
+}
+
+function finishIdea(){
+  idea = document.getElementById('ideaInput').value;
+  pageExtra();
+}
+
+function noIdea(){
+  idea = '';
+  pageExtra();
+}
+
+/* ================= EXTRA CHAT ================= */
+
+function pageExtra(){
+  app.innerHTML = `
+    <h2>Extra questions  💬</h2>
+
+    <div class="chat-box">
+      <div class="bubble bot">Last section I swear 😳</div>
+      <div class="bubble bot">Favorite color? 🎨</div>
+      <div class="bubble bot">Favorite flavor or dessert? 🍓</div>
+      <div class="bubble bot">Favorite artist? 🎤</div>
+      <div class="bubble bot">Music genre? 🎶</div>
+    </div>
+
+    <textarea id="extraInput" placeholder="Write here..."></textarea>
+
+    <br>
+    <button class="primary" onclick="finishExtra()">Send 💌</button>
+
+    ${meme(3)}
+  `;
+}
+
+function finishExtra(){
+  extra = document.getElementById('extraInput').value;
+  page5();
+}
+
+/* ================= FLOW CONTINUE ================= */
+
+function page5(){
+  app.innerHTML = `
+    <h2>OKAY THIS IS THE REAL LAST PART 😳</h2>
+    <h2>Would you like some flowers? 🌸</h2>
+
     <button class="primary" onclick="flowerYes()">Yes</button>
     <button onclick="flowerNo()">No</button>
+
     ${meme(4)}
   `;
 }
-
-function flowerYes(){
+  function flowerYes(){
   flower = 'Yes';
+
   app.innerHTML = `
-    <h2>I will be there with some flowers 💐</h2>
-    <button class="primary" onclick="page6()">Continue</button>
+    <h2>Okay I'll bring you the prettiest one 💐</h2>
+
     <img class="meme" src="https://media.giphy.com/media/ASd0Ukj0y3qMM/giphy.gif">
-  `;
-}
 
-function flowerNo(){
-  flower = 'No';
-  app.innerHTML = `
-    <h2>Of course we don't need flowers cause I'm the most gorgeous one 😏</h2>
+    <br>
     <button class="primary" onclick="page6()">Continue</button>
-    <img class="meme" src="https://media.giphy.com/media/10tIjpzIu8fe0/giphy.gif">
   `;
 }
-    `;
-  }
+  function flowerNo(){
+  flower = 'No';
 
-  function selectFlower(ans){ flower=ans; page6(); }
+  app.innerHTML = `
+    <h2>Of course no flower needed because we are the gorgeous ones 😌✨</h2>
 
-  function sendData(){
-    if(!ENDPOINT.includes("your-id")){
-      fetch(ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          date: `April ${selectedDate}`,
-          time: selectedTime,
-          idea: idea || 'No idea',
-          flower: flower
-        })
-      });
-    }
-  }
+    <img class="meme" src="https://media.giphy.com/media/10tIjpzIu8fe0/giphy.gif">
 
-  function page6(){
-    sendData(); // 👉 auto gửi dữ liệu
+    <br>
+    <button class="primary" onclick="page6()">Continue</button>
+  `;
+}
 
-    app.innerHTML = `
-      <h1>Copy that. See yaaaa ! 😳💖</h1>
-      <p>April ${selectedDate} - ${selectedTime}</p>
-      <p>Idea: ${idea || 'I will plan it 😉'}</p>
-      <p>Flower: ${flower}</p>
-      ${meme(5)}
-    `;
-  }
+/* ================= SEND ================= */
 
-  page1();
+function sendData(){
+  fetch(ENDPOINT,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      date:selectedDate,
+      time:selectedTime,
+      idea:idea||'No idea',
+      extra:extra||'No extra',
+      flower:flower
+    })
+  });
+}
+
+/* ================= END ================= */
+
+function page6(){
+  sendData();
+
+  app.innerHTML = `
+    <h1>Copy that!See ya ~ 🫡</h1>
+
+    <p>${selectedDate} - ${selectedTime}</p>
+    <p><b>Idea:</b> ${idea||'I will plan it 😉'}</p>
+    <p><b>Extra:</b> ${extra||'Secret 🤫'}</p>
+    <p><b>Flower:</b> ${flower}</p>
+
+    ${meme(5)}
+  `;
+}
+
+page1();
 </script>
+
 </body>
 </html>
